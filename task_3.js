@@ -1,22 +1,22 @@
 const express = require('express');
+// eg posting a letter with address
 const bodyParser = require('body-parser');
-const axios = require('axios');
 const mongoose = require('mongoose');
 
 const app = express();
-const PORT = 3000;
+const PORT = 3000;//port number where server sunega
 
 mongoose.connect('mongodb+srv://vanss2808:Jns$2020@cluster0.y86jjmu.mongodb.net/', {
   useNewUrlParser: true,
-  useUnifiedTopology: true//what is it
+  useUnifiedTopology: true
 });
 const db = mongoose.connection;
-
+//error handling
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB');
 });
-
+//blue print types
 const wordSchema = new mongoose.Schema({
   word: {
     type: String,
@@ -33,35 +33,11 @@ const Word = mongoose.model('Word', wordSchema);
 
 app.use(bodyParser.json());
 
-// Endpoint to fetch word meanings
-app.get('/getMeaning/:input', async (req, res) => {
-  const word = req.params.input;
 
-  try {
-    const response = await axios.get(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-
-    if (response.data.length === 0) {
-      return res.status(404).json({ error: 'Word not found' });
-    }
-
-    const meanings = response.data[0].meanings.map(meaning => {
-      return {
-        partOfSpeech: meaning.partOfSpeech,
-        definitions: meaning.definitions.map(definition => definition.definition)
-      };
-    });
-
-    res.json({ word, meanings });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'An error occurred while fetching data' });
-  }
-});
-
-// POST request to store a new word along with its meaning
+//  store a new word meaning ke saath
 app.post('/addWord', async (req, res) => {
   const wordEntry = new Word({ ...req.body });
-
+//word:req.body.word
   try {
     await wordEntry.save();
     res.status(201).json(wordEntry);
@@ -70,7 +46,7 @@ app.post('/addWord', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while storing data' });
   }
 });
-
+//getting sab words
 app.get('/getAllMeanings', async (req, res) => {
   try {
     const allMeanings = await Word.find({});
@@ -81,22 +57,7 @@ app.get('/getAllMeanings', async (req, res) => {
   }
 });
 
-app.get('/getWord/:word', async (req, res) => {
-  const word = req.params.word;
 
-  try {
-    const foundWord = await Word.findOne({ word });
-
-    if (!foundWord) {
-      return res.status(404).json({ error: 'Word not found' });
-    }
-
-    res.json(foundWord);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'An error occurred while fetching data' });
-  }
-});
 // Endpoint to fetch a specific word from the database
 app.get('/getWordInput', async (req, res) => {
   const word = req.body.word;
