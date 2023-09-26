@@ -4,7 +4,7 @@ const axios = require('axios');
 
 const app = express();
 const PORT = 3000;
-//endpoint vanshika
+
 app.use(bodyParser.json());
 app.get("/vanshika", async (req, res) => {
   res.send('byeworld');
