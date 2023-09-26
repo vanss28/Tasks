@@ -1,22 +1,21 @@
 const express = require('express');
-// eg posting a letter with address
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const app = express();
-const PORT = 3000;//port number where server sunega
+const PORT = 3000;
 
 mongoose.connect('mongodb+srv://vanss2808:Jns$2020@cluster0.y86jjmu.mongodb.net/', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
 const db = mongoose.connection;
-//error handling
+
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB');
 });
-//blue print types
+
 const wordSchema = new mongoose.Schema({
   word: {
     type: String,
